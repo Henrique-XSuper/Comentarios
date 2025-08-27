@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Avaliações</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        .star {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .star:hover {
+            transform: scale(1.1);
+        }
+        
+        .review-card {
+            transition: all 0.3s ease;
+        }
+        
+        .review-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        .notification {
+            transition: all 0.3s ease;
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen py-8">
+    <div class="container mx-auto px-4 max-w-4xl">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">⭐ Sistema de Avaliações</h1>
+            <p class="text-gray-600">Compartilhe sua experiência e veja o que outros usuários estão dizendo</p>
+        </div>
+
+        <!-- Formulário de Avaliação -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">📝 Deixe sua Avaliação</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Nome do Usuário</label>
+                    <input type="text" id="userName" placeholder="Digite seu nome" 
+                           class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Produto</label>
+                    <select id="productSelect" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                        <option value="Smartphone Premium">Smartphone Premium</option>
+                        <option value="Notebook Gamer">Notebook Gamer</option>
+                        <option value="Fone Bluetooth">Fone Bluetooth</option>
+                        <option value="Smart TV 4K">Smart TV 4K</option>
+                        <option value="Tablet Pro">Tablet Pro</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <label class="block text-gray-700 text-sm font-medium mb-3">Sua Avaliação</label>
+                <div class="flex items-center space-x-2" id="starRating">
+                    <span class="star text-4xl text-gray-300 hover:text-yellow-400" data-rating="1">★</span>
+                    <span class="star text-4xl text-gray-300 hover:text-yellow-400" data-rating="2">★</span>
+                    <span class="star text-4xl text-gray-300 hover:text-yellow-400" data-rating="3">★</span>
+                    <span class="star text-4xl text-gray-300 hover:text-yellow-400" data-rating="4">★</span>
+                    <span class="star text-4xl text-gray-300 hover:text-yellow-400" data-rating="5">★</span>
+                    <span class="ml-4 text-gray-600 font-medium" id="ratingText">Clique nas estrelas para avaliar</span>
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <label class="block text-gray-700 text-sm font-medium mb-2">Comentário</label>
+                <textarea id="reviewComment" rows="4" placeholder="Conte-nos sobre sua experiência com o produto..."
+                          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"></textarea>
+            </div>
+            
+            <button onclick="submitReview()" class="mt-6 w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 shadow-lg">
+                🚀 Enviar Avaliação
+            </button>
+        </div>
+
+        <!-- Estatísticas -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 mb-8">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">📊 Resumo das Avaliações</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-blue-600" id="averageRating">4.5</div>
+                    <div class="flex justify-center items-center mt-2" id="averageStars">
+                        <span class="text-yellow-400 text-xl">★★★★★</span>
+                    </div>
+                    <div class="text-gray-600 text-sm mt-1">Média Geral</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-green-600" id="totalReviews">3</div>
+                    <div class="text-gray-600 text-sm mt-1">Total de Avaliações</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-purple-600" id="recommendationRate">100%</div>
+                    <div class="text-gray-600 text-sm mt-1">Recomendação</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 mb-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <h3 class="text-xl font-semibold text-gray-800">💬 Avaliações dos Usuários</h3>
+                <div class="flex items-center space-x-4">
+                    <select id="filterProduct" onchange="filterReviews()" class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="all">Todos os Produtos</option>
+                        <option value="Smartphone Premium">Smartphone Premium</option>
+                        <option value="Notebook Gamer">Notebook Gamer</option>
+                        <option value="Fone Bluetooth">Fone Bluetooth</option>
+                        <option value="Smart TV 4K">Smart TV 4K</option>
+                        <option value="Tablet Pro">Tablet Pro</option>
+                    </select>
+                    <select id="filterRating" onchange="filterReviews()" class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="all">Todas as Estrelas</option>
+                        <option value="5">5 Estrelas</option>
+                        <option value="4">4 Estrelas</option>
+                        <option value="3">3 Estrelas</option>
+                        <option value="2">2 Estrelas</option>
+                        <option value="1">1 Estrela</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Avaliações -->
+        <div id="reviewsList" class="space-y-6">
+            <!-- Reviews will be displayed here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden text-center py-12">
+            <div class="text-6xl mb-4">🔍</div>
+            <h3 class="text-xl font-semibold text-gray-600 mb-2">Nenhuma avaliação encontrada</h3>
+            <p class="text-gray-500">Tente ajustar os filtros ou seja o primeiro a avaliar!</p>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notification" class="notification fixed top-4 right-4 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg z-50">
+        <div class="flex items-center space-x-2">
+            <span id="notificationIcon">✅</span>
+            <span id="notificationText">Avaliação enviada com sucesso!</span>
+        </div>
+    </div>
+
+    <script>
+        let selectedRating = 0;
+        let reviews = [
+            {
+                id: 1,
+                userName: "Maria Silva",
+                product: "Smartphone Premium",
+                rating: 5,
+                comment: "Produto incrível! A qualidade da câmera é excepcional e a bateria dura o dia todo. Recomendo muito!",
+                date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
+            },
+            {
+                id: 2,
+                userName: "João Santos",
+                product: "Notebook Gamer",
+                rating: 4,
+                comment: "Excelente desempenho para jogos. O único ponto negativo é que esquenta um pouco durante uso intenso, mas nada que comprometa.",
+                date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
+            },
+            {
+                id: 3,
+                userName: "Ana Costa",
+                product: "Fone Bluetooth",
+                rating: 5,
+                comment: "Som cristalino e conexão estável. Uso para trabalhar e ouvir música, perfeito para ambos. Muito confortável!",
+                date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+            }
+        ];
+
+        function initStarRating() {
+            const stars = document.querySelectorAll('.star');
+            const ratingText = document.getElementById('ratingText');
+            
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    selectedRating = parseInt(this.dataset.rating);
+                    updateStarDisplay();
+                    updateRatingText();
+                });
+                
+                star.addEventListener('mouseover', function() {
+                    const hoverRating = parseInt(this.dataset.rating);
+                    highlightStars(hoverRating);
+                });
+            });
+            
+            document.getElementById('starRating').addEventListener('mouseleave', function() {
+                updateStarDisplay();
+            });
+        }
+        
+        function highlightStars(rating) {
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.remove('text-gray-300');
+                    star.classList.add('text-yellow-400');
+                } else {
+                    star.classList.remove('text-yellow-400');
+                    star.classList.add('text-gray-300');
+                }
+            });
+        }
+        
+        function updateStarDisplay() {
+            highlightStars(selectedRating);
+        }
+        
+        function updateRatingText() {
+            const ratingText = document.getElementById('ratingText');
+            const ratingLabels = {
+                0: 'Clique nas estrelas para avaliar',
+                1: '⭐ Muito Ruim',
+                2: '⭐⭐ Ruim',
+                3: '⭐⭐⭐ Regular',
+                4: '⭐⭐⭐⭐ Bom',
+                5: '⭐⭐⭐⭐⭐ Excelente'
+            };
+            ratingText.textContent = ratingLabels[selectedRating];
+        }
+        
+        function submitReview() {
+            const userName = document.getElementById('userName').value.trim();
+            const product = document.getElementById('productSelect').value;
+            const comment = document.getElementById('reviewComment').value.trim();
+            
+            if (!userName) {
+                showNotification('Por favor, digite seu nome!', 'error');
+                return;
+            }
+            
+            if (selectedRating === 0) {
+                showNotification('Por favor, selecione uma avaliação!', 'error');
+                return;
+            }
+            
+            if (!comment) {
+                showNotification('Por favor, escreva um comentário!', 'error');
+                return;
+            }
+            
+            const newReview = {
+                id: reviews.length + 1,
+                userName: userName,
+                product: product,
+                rating: selectedRating,
+                comment: comment,
+                date: new Date()
+            };
+            
+            reviews.unshift(newReview);
+            
+            // Clear form
+            document.getElementById('userName').value = '';
+            document.getElementById('reviewComment').value = '';
+            selectedRating = 0;
+            updateStarDisplay();
+            updateRatingText();
+            
+            // Update displays
+            displayReviews();
+            updateStats();
+            showNotification('Avaliação enviada com sucesso!', 'success');
+        }
+        
+        function displayReviews() {
+            const reviewsList = document.getElementById('reviewsList');
+            const emptyState = document.getElementById('emptyState');
+            const productFilter = document.getElementById('filterProduct').value;
+            const ratingFilter = document.getElementById('filterRating').value;
+            
+            let filteredReviews = reviews;
+            
+            if (productFilter !== 'all') {
+                filteredReviews = filteredReviews.filter(review => review.product === productFilter);
+            }
+            
+            if (ratingFilter !== 'all') {
+                filteredReviews = filteredReviews.filter(review => review.rating === parseInt(ratingFilter));
+            }
+            
+            if (filteredReviews.length === 0) {
+                reviewsList.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            
+            reviewsList.innerHTML = filteredReviews.map((review, index) => {
+                const starsHtml = generateStarsHtml(review.rating);
+                const timeAgo = getTimeAgo(review.date);
+                
+                return `
+                    <div class="review-card bg-white rounded-2xl shadow-lg p-6 slide-in" style="animation-delay: ${index * 0.1}s">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                                    <span class="text-white font-bold text-lg">${review.userName.charAt(0).toUpperCase()}</span>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-800">${review.userName}</h4>
+                                    <p class="text-gray-600 text-sm">${review.product}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="flex items-center space-x-1 mb-1">
+                                    ${starsHtml}
+                                </div>
+                                <div class="text-gray-500 text-xs">${timeAgo}</div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <p class="text-gray-700 leading-relaxed">"${review.comment}"</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function generateStarsHtml(rating) {
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= rating) {
+                    starsHtml += '<span class="text-yellow-400 text-lg">★</span>';
+                } else {
+                    starsHtml += '<span class="text-gray-300 text-lg">★</span>';
+                }
+            }
+            return starsHtml;
+        }
+        
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+            const diffMinutes = Math.floor(diffTime / (1000 * 60));
+            
+            if (diffDays > 0) {
+                return `há ${diffDays} dia${diffDays > 1 ? 's' : ''}`;
+            } else if (diffHours > 0) {
+                return `há ${diffHours} hora${diffHours > 1 ? 's' : ''}`;
+            } else if (diffMinutes > 0) {
+                return `há ${diffMinutes} minuto${diffMinutes > 1 ? 's' : ''}`;
+            } else {
+                return 'agora mesmo';
+            }
+        }
+        
+        function filterReviews() {
+            displayReviews();
+        }
+        
+        function updateStats() {
+            if (reviews.length === 0) return;
+            
+            const totalReviews = reviews.length;
+            const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+            const averageRating = (totalRating / totalReviews).toFixed(1);
+            const recommendationRate = Math.round((reviews.filter(r => r.rating >= 4).length / totalReviews) * 100);
+            
+            document.getElementById('averageRating').textContent = averageRating;
+            document.getElementById('totalReviews').textContent = totalReviews;
+            document.getElementById('recommendationRate').textContent = recommendationRate + '%';
+            
+            // Update average stars display
+            const avgStarsContainer = document.getElementById('averageStars');
+            avgStarsContainer.innerHTML = `<span class="text-yellow-400 text-xl">${generateStarsHtml(Math.round(averageRating))}</span>`;
+        }
+        
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const icon = document.getElementById('notificationIcon');
+            const text = document.getElementById('notificationText');
+            
+            text.textContent = message;
+            
+            if (type === 'error') {
+                notification.className = 'notification fixed top-4 right-4 bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg z-50';
+                icon.textContent = '❌';
+            } else {
+                notification.className = 'notification fixed top-4 right-4 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg z-50';
+                icon.textContent = '✅';
+            }
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize the system
+        function init() {
+            initStarRating();
+            displayReviews();
+            updateStats();
+        }
+
+        // Start when page loads
+        window.addEventListener('load', init);
+    </script>
+</body> </html>
