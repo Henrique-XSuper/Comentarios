@@ -1,44 +1,48 @@
-⭐ Sistema de Avaliações
+# ⭐ Sistema de Avaliações
 
 Sistema web interativo para coletar, exibir e filtrar avaliações de produtos. Desenvolvido com HTML, TailwindCSS e JavaScript puro, permite que usuários avaliem produtos com comentários e estrelas, além de visualizar estatísticas e aplicar filtros em tempo real.
 
-✨ Funcionalidades
+---
+## ✨ Funcionalidades
 
-✅ Avaliação com sistema de estrelas (1 a 5)
+### ✅ Avaliação com sistema de estrelas (1 a 5)
 
-✍️ Comentários personalizados por produto
+### ✍️ Comentários personalizados por produto
 
-📊 Estatísticas em tempo real:
+### 📊 Estatísticas em tempo real:
 
-Média geral de avaliações
+- Média geral de avaliações
 
-Porcentagem de recomendações (4 ou 5 estrelas)
+- Porcentagem de recomendações (4 ou 5 estrelas)
 
-Total de avaliações
+- Total de avaliações
 
-🔍 Filtros por:
+---
+## 🔍 Filtros por:
 
-Produto
+- Produto
 
-Nota (estrelas)
+- Nota (estrelas)
 
+---
 🎨 Interface moderna e responsiva com Tailwind CSS
 
 📱 Totalmente compatível com dispositivos móveis
 
-🚀 Tecnologias Utilizadas
+---
+## 🚀 Tecnologias Utilizadas
 
-HTML5
+- HTML5
 
-TailwindCSS
+- CSS
 
-JavaScript (sem bibliotecas externas)
-
-🖥️ Como Usar
+- JavaScript (sem bibliotecas externas)
+---
+## 🖥️ Como Usar
 
 Clone o repositório
 
-git clone https://github.com/seu-usuario/sistema-avaliacoes.git
+git clone https://github.com/Henrique-XSuper/Comentários.git
 
 
 Acesse a pasta do projeto
@@ -53,11 +57,13 @@ Basta clicar duas vezes no arquivo index.html
 Ou usar uma extensão como Live Server (VS Code)
 
 📁 Estrutura do Projeto
-sistema-avaliacoes/
-├── index.html        # Página principal com todo o sistema
-├── README.md         # Documentação do projeto
+Comentários/
+├── index.html <br> 
+├── script.js  <br>
+├── README.md  <br>  
 
-📷 Exemplos Visuais
+---
+## 📷 Exemplos Visuais
 Formulário de Avaliação
 
 Lista de Avaliações
